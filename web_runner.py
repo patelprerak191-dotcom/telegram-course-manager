@@ -15,33 +15,40 @@ from fastapi.responses import JSONResponse
 # ============================================================
 
 PROCESS_COMMANDS = [
-    ("admin_bot", [sys.executable, "-m", "app.admin_bot.main"]),
-    ("customer_bot", [sys.executable, "-m", "app.customer_bot.main"]),
-    ("expiry_worker", [sys.executable, "-m", "app.expiry_worker"]),
+    (
+        "admin_bot",
+        [sys.executable, "-u", "-m", "app.admin_bot.main"],
+    ),
+    (
+        "customer_bot",
+        [sys.executable, "-u", "-m", "app.customer_bot.main"],
+    ),
+    (
+        "expiry_worker",
+        [sys.executable, "-u", "-m", "app.expiry_worker"],
+    ),
 ]
 
 
 processes = {}
 reported_exits = set()
+
 monitor_thread = None
 shutdown_requested = False
 
 
 # ============================================================
-# CHILD PROCESS OUTPUT
+# FORWARD CHILD OUTPUT
 # ============================================================
 
 def forward_output(name, stream, label):
     """
-    Forward child process stdout/stderr to the main
-    Render/Uvicorn console.
-
-    UTF-8 is explicitly used so emoji and Unicode
-    characters do not crash the child processes.
+    Forward child stdout/stderr to Render logs.
     """
 
     try:
         for line in iter(stream.readline, ""):
+
             if line:
                 print(
                     f"[{name}][{label}] {line.rstrip()}",
@@ -49,6 +56,7 @@ def forward_output(name, stream, label):
                 )
 
     except Exception as exc:
+
         print(
             f"[RUNNER] Output forwarding error "
             f"for {name}/{label}: {exc!r}",
@@ -56,6 +64,7 @@ def forward_output(name, stream, label):
         )
 
     finally:
+
         try:
             stream.close()
         except Exception:
@@ -67,25 +76,36 @@ def forward_output(name, stream, label):
 # ============================================================
 
 def start_process(name, command):
+
     print(
         f"[RUNNER] Starting {name}: {' '.join(command)}",
         flush=True,
     )
 
     try:
-        # Force UTF-8 for child Python processes.
+
         env = os.environ.copy()
+
+        # Force UTF-8.
         env["PYTHONIOENCODING"] = "utf-8"
         env["PYTHONUTF8"] = "1"
 
+        # Disable Python output buffering.
+        env["PYTHONUNBUFFERED"] = "1"
+
         process = subprocess.Popen(
             command,
+
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+
             text=True,
+
             encoding="utf-8",
             errors="replace",
+
             bufsize=1,
+
             env=env,
         )
 
@@ -97,21 +117,30 @@ def start_process(name, command):
             flush=True,
         )
 
-        # Forward normal output.
+        # stdout
         threading.Thread(
             target=forward_output,
-            args=(name, process.stdout, "STDOUT"),
+            args=(
+                name,
+                process.stdout,
+                "STDOUT",
+            ),
             daemon=True,
         ).start()
 
-        # Forward errors.
+        # stderr
         threading.Thread(
             target=forward_output,
-            args=(name, process.stderr, "STDERR"),
+            args=(
+                name,
+                process.stderr,
+                "STDERR",
+            ),
             daemon=True,
         ).start()
 
     except Exception as exc:
+
         print(
             f"[RUNNER] FAILED to start {name}: {exc!r}",
             flush=True,
@@ -123,12 +152,6 @@ def start_process(name, command):
 # ============================================================
 
 def monitor_processes():
-    """
-    Monitor child processes.
-
-    If a child process exits, report it once instead
-    of printing the same error every few seconds.
-    """
 
     global shutdown_requested
 
@@ -148,14 +171,14 @@ def monitor_processes():
 
                     print(
                         f"[RUNNER][PROCESS EXITED] "
-                        f"{name} stopped with "
-                        f"exit code {return_code}",
+                        f"{name} stopped "
+                        f"with exit code {return_code}",
                         flush=True,
                     )
 
 
 # ============================================================
-# STOP ALL CHILD PROCESSES
+# STOP ALL PROCESSES
 # ============================================================
 
 def stop_all():
@@ -172,7 +195,7 @@ def stop_all():
         flush=True,
     )
 
-    # First try graceful termination.
+    # Graceful termination.
     for name, process in list(processes.items()):
 
         if process.poll() is None:
@@ -184,6 +207,7 @@ def stop_all():
             )
 
             try:
+
                 process.terminate()
 
             except Exception as exc:
@@ -194,7 +218,7 @@ def stop_all():
                     flush=True,
                 )
 
-    # Give processes up to 10 seconds.
+    # Wait maximum 10 seconds.
     deadline = time.time() + 10
 
     for name, process in list(processes.items()):
@@ -222,6 +246,7 @@ def stop_all():
             )
 
             try:
+
                 process.kill()
 
             except Exception as exc:
@@ -278,15 +303,13 @@ async def lifespan(app: FastAPI):
         flush=True,
     )
 
-    # Application remains alive.
     yield
 
-    # Shutdown.
     stop_all()
 
 
 # ============================================================
-# FASTAPI APP
+# FASTAPI APPLICATION
 # ============================================================
 
 app = FastAPI(
@@ -343,8 +366,6 @@ async def health():
 
             all_running = False
 
-    # Healthy only when all expected processes
-    # are present and running.
     healthy = (
         all_running
         and len(processes) == len(PROCESS_COMMANDS)
@@ -429,10 +450,7 @@ if __name__ == "__main__":
     )
 
     uvicorn.run(
-
         app,
-
         host="0.0.0.0",
-
         port=port,
     )
