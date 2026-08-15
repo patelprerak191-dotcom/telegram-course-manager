@@ -25,27 +25,45 @@ def start_process(name, command):
 
 def stop_all():
     print("[RUNNER] Stopping child processes...", flush=True)
+
     for name, process in list(processes.items()):
         if process.poll() is None:
-            print(f"[RUNNER] Terminating {name} (pid={process.pid})", flush=True)
+            print(
+                f"[RUNNER] Terminating {name} (pid={process.pid})",
+                flush=True,
+            )
+
             try:
                 process.terminate()
             except Exception as exc:
-                print(f"[RUNNER] terminate error for {name}: {exc!r}", flush=True)
+                print(
+                    f"[RUNNER] terminate error for {name}: {exc!r}",
+                    flush=True,
+                )
 
     deadline = time.time() + 10
+
     for name, process in list(processes.items()):
         if process.poll() is not None:
             continue
+
         remaining = max(0, deadline - time.time())
+
         try:
             process.wait(timeout=remaining)
         except subprocess.TimeoutExpired:
-            print(f"[RUNNER] Killing {name} (pid={process.pid})", flush=True)
+            print(
+                f"[RUNNER] Killing {name} (pid={process.pid})",
+                flush=True,
+            )
+
             try:
                 process.kill()
             except Exception as exc:
-                print(f"[RUNNER] kill error for {name}: {exc!r}", flush=True)
+                print(
+                    f"[RUNNER] kill error for {name}: {exc!r}",
+                    flush=True,
+                )
 
 
 @asynccontextmanager
@@ -53,13 +71,26 @@ async def lifespan(app: FastAPI):
     for name, command in PROCESS_COMMANDS:
         start_process(name, command)
 
-    print("[RUNNER] All child processes started.", flush=True)
+    print(
+        "[RUNNER] All child processes started.",
+        flush=True,
+    )
+
     yield
+
     stop_all()
 
 
-app = FastAPI(title="Telegram Course Manager", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="Telegram Course Manager",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
+
+# ============================================================
+# ROOT ENDPOINT
+# ============================================================
 
 @app.get("/")
 async def root():
@@ -70,6 +101,16 @@ async def root():
     }
 
 
+# Support HTTP HEAD requests from monitoring services
+@app.head("/")
+async def root_head():
+    return
+
+
+# ============================================================
+# HEALTH CHECK
+# ============================================================
+
 @app.get("/health")
 async def health():
     child_status = {}
@@ -77,23 +118,43 @@ async def health():
 
     for name, process in processes.items():
         running = process.poll() is None
+
         child_status[name] = {
             "running": running,
             "pid": process.pid,
         }
+
         if not running:
             all_running = False
 
-    status_code = 200 if all_running and len(processes) == len(PROCESS_COMMANDS) else 503
+    status_code = (
+        200
+        if all_running and len(processes) == len(PROCESS_COMMANDS)
+        else 503
+    )
 
     return JSONResponse(
         status_code=status_code,
         content={
-            "status": "healthy" if status_code == 200 else "degraded",
+            "status": (
+                "healthy"
+                if status_code == 200
+                else "degraded"
+            ),
             "services": child_status,
         },
     )
 
+
+# Support HTTP HEAD requests from UptimeRobot/monitoring services
+@app.head("/health")
+async def health_head():
+    return
+
+
+# ============================================================
+# SIGNAL HANDLING
+# ============================================================
 
 def handle_signal(signum, frame):
     stop_all()
@@ -104,8 +165,17 @@ signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT, handle_signal)
 
 
+# ============================================================
+# START FASTAPI / UVICORN
+# ============================================================
+
 if __name__ == "__main__":
     import uvicorn
 
     port = int(os.getenv("PORT", "10000"))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=port,
+    )
