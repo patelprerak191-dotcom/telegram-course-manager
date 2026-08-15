@@ -1,0 +1,57 @@
+﻿services:
+  - type: worker
+    name: telegram-course-admin
+    runtime: python
+    region: singapore
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m app.admin_bot.main
+    envVars:
+      - key: CUSTOMER_BOT_TOKEN
+        sync: false
+      - key: ADMIN_BOT_TOKEN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: ADMIN_TELEGRAM_ID
+        sync: false
+
+  - type: worker
+    name: telegram-course-customer
+    runtime: python
+    region: singapore
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m app.customer_bot.main
+    envVars:
+      - key: CUSTOMER_BOT_TOKEN
+        sync: false
+      - key: ADMIN_BOT_TOKEN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: ADMIN_TELEGRAM_ID
+        sync: false
+
+  - type: worker
+    name: telegram-course-expiry
+    runtime: python
+    region: singapore
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m app.expiry_worker
+    envVars:
+      - key: CUSTOMER_BOT_TOKEN
+        sync: false
+      - key: ADMIN_BOT_TOKEN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: ADMIN_TELEGRAM_ID
+        sync: false
