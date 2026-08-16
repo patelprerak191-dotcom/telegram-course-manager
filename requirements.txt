@@ -5,3 +5,5 @@ supabase
 python-dotenv
 pydantic-settings
 httpx
+python-multipart
+python-multipart
