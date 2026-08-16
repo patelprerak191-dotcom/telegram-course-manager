@@ -260,24 +260,13 @@ async def create_payment(request: Request, plan_id: str = Form(...), screenshot:
 
 
 def resolve_customer_bot_username() -> str:
-    """Use configured username, otherwise safely resolve it from CUSTOMER_BOT_TOKEN."""
+    """Return the configured bot username without making the page request depend on Telegram."""
     global _RESOLVED_BOT_USERNAME
     if _RESOLVED_BOT_USERNAME:
         return _RESOLVED_BOT_USERNAME
-    try:
-        req = UrlRequest(
-            f"https://api.telegram.org/bot{CUSTOMER_BOT_TOKEN}/getMe",
-            headers={"User-Agent": "Telegram-Course-Manager/1.0"},
-            method="GET",
-        )
-        with urlopen(req, timeout=5) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        username = ((data.get("result") or {}).get("username") or "").strip().lstrip("@")
-        if username:
-            _RESOLVED_BOT_USERNAME = username
-    except Exception:
-        pass
-    return _RESOLVED_BOT_USERNAME
+    # Do not call Telegram from the HTML request. Render can temporarily block
+    # outbound DNS/network calls, and the customer page must still return 200.
+    return ""
 
 
 @app.get("/", response_class=HTMLResponse)

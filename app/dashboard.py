@@ -492,7 +492,7 @@ async def dashboard_update_course(course_id: str, payload: dict = Body(...), _: 
     except Exception as exc:
         print("Dashboard update course error:", repr(exc))
         raise HTTPException(status_code=500, detail=str(exc))
-    log_activity("course_updated", "course", course_id, f"Updated course: {name if "name" in locals() else course_id}")
+    log_activity("course_updated", "course", course_id, f"Updated course: {name if 'name' in locals() else course_id}")
     return {"ok": True, "course": response.data[0] if response.data else {"id": course_id, **update}}
 
 
@@ -1016,7 +1016,7 @@ async def dashboard_reject_payment(payment_id: str, payload: dict | None = Body(
         )
     except Exception as exc:
         print("Dashboard rejection notification error:", repr(exc))
-    log_activity("payment_rejected", "payment", payment.get("id"), f"Payment #{payment.get("payment_number")} rejected")
+    log_activity("payment_rejected", "payment", payment.get("id"), f"Payment #{payment.get('payment_number')} rejected")
     return {"ok": True, "payment": updated.data[0]}
 
 
@@ -1548,6 +1548,208 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;ba
 .brand{display:flex;align-items:center;gap:11px;margin-bottom:32px}.brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ff7a62);box-shadow:0 0 30px rgba(255,79,112,.35);position:relative}.brand-mark:after{content:"";position:absolute;width:9px;height:9px;background:#fff;border-radius:50%;top:8px;left:8px;box-shadow:10px 9px 0 rgba(255,255,255,.58)}.brand b{font-size:18px;letter-spacing:-.035em}.brand span{display:block;color:var(--muted);font-size:10px;margin-top:2px}.eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:800}.login-card h1{margin:9px 0 9px;font-size:31px;letter-spacing:-.05em}.subtitle{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 26px}.field{margin-top:16px}.field label{display:block;color:#aeb6c6;font-size:11px;font-weight:700;margin-bottom:7px}.field input{width:100%;height:46px;border:1px solid var(--line);border-radius:11px;background:#0b0f16;color:var(--text);padding:0 13px;outline:none;transition:.18s}.field input:focus{border-color:rgba(255,79,112,.62);box-shadow:0 0 0 3px rgba(255,79,112,.10)}.login-btn{width:100%;height:46px;margin-top:22px;border:1px solid rgba(255,79,112,.5);border-radius:11px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(255,79,112,.20)}.login-btn:hover{filter:brightness(1.05);transform:translateY(-1px)}.login-error{border:1px solid rgba(255,104,124,.28);background:rgba(255,104,124,.08);color:#ff9aaa;border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.45;margin-bottom:14px}.secure-note{display:flex;align-items:center;gap:7px;margin-top:18px;color:#687184;font-size:10px}.secure-dot{width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 10px rgba(94,231,165,.65)}
 @media(max-width:520px){.login-card{padding:26px 22px}.login-card h1{font-size:28px}}
 </style>
+
+<style>
+/* V32.3 safe visual polish — no functionality changes */
+.brand-mark{display:grid!important;place-items:center!important;overflow:hidden!important}
+.brand-mark svg{width:100%!important;height:100%!important;display:block!important}
+.nav .ico{display:inline-grid!important;place-items:center!important;width:34px!important;height:34px!important;border-radius:10px!important}
+.nav .ico svg{width:18px!important;height:18px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.nav button{gap:10px!important}
+</style>
+
+<style>
+/* ==========================================================
+   V32.4 — UI POLISH ONLY
+   Keep V32.3 functionality untouched.
+   ========================================================== */
+:root{
+  --v-accent:#8b5cf6;
+  --v-accent2:#22d3ee;
+  --v-surface:rgba(15,23,42,.88);
+  --v-surface2:rgba(17,25,39,.72);
+  --v-border:rgba(148,163,184,.14);
+  --v-text:#f8fafc;
+  --v-muted:#94a3b8;
+}
+body{
+  letter-spacing:-.005em;
+}
+.sidebar{
+  backdrop-filter:blur(18px);
+}
+.brand{
+  gap:11px!important;
+}
+.brand-mark{
+  position:relative!important;
+  flex:0 0 42px!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,var(--v-accent),var(--v-accent2))!important;
+  box-shadow:0 12px 35px rgba(139,92,246,.25)!important;
+}
+.brand-mark:after{
+  content:"";
+  position:absolute;
+  inset:1px;
+  border-radius:13px;
+  border:1px solid rgba(255,255,255,.22);
+  pointer-events:none;
+}
+.nav button{
+  position:relative;
+  overflow:hidden;
+}
+.nav button.active:after{
+  content:"";
+  position:absolute;
+  right:8px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#22d3ee;
+  box-shadow:0 0 12px rgba(34,211,238,.8);
+}
+.main{
+  max-width:1700px;
+}
+.topbar{
+  border-bottom:1px solid rgba(148,163,184,.10)!important;
+}
+.hero-card{
+  position:relative;
+}
+.hero-card:after{
+  content:"";
+  position:absolute;
+  width:260px;height:260px;
+  right:-90px;bottom:-120px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(34,211,238,.12),transparent 65%);
+  pointer-events:none;
+}
+.stat{
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease!important;
+}
+.stat:hover{
+  transform:translateY(-3px);
+  border-color:rgba(139,92,246,.25)!important;
+  box-shadow:0 22px 55px rgba(0,0,0,.22)!important;
+}
+.stat-value{
+  font-variant-numeric:tabular-nums;
+}
+.panel{
+  transition:border-color .18s ease,box-shadow .18s ease;
+}
+.panel:hover{
+  border-color:rgba(148,163,184,.18)!important;
+}
+.panel-title{
+  min-height:68px;
+}
+.panel-title .action-btn,
+.section-head .action-btn{
+  white-space:nowrap;
+}
+.filter-bar{
+  padding:14px 18px!important;
+  background:rgba(255,255,255,.012);
+  border-bottom:1px solid rgba(148,163,184,.08);
+}
+.search-input,.select-dark,.textarea-dark{
+  transition:border-color .16s ease,box-shadow .16s ease,background .16s ease!important;
+}
+.search-input:hover,.select-dark:hover,.textarea-dark:hover{
+  background:#0b111d!important;
+}
+.action-btn{
+  min-height:38px!important;
+}
+.action-btn.primary{
+  background:linear-gradient(135deg,#8b5cf6,#6366f1)!important;
+}
+.row-actions{
+  align-items:center!important;
+}
+.status{
+  white-space:nowrap;
+}
+.course-tabs{
+  position:sticky;
+  top:0;
+  z-index:10;
+  padding:10px 0;
+  background:linear-gradient(180deg,#101827 75%,rgba(16,24,39,0));
+  backdrop-filter:blur(10px);
+}
+.course-tab{
+  animation:vTabIn .16s ease-out;
+}
+@keyframes vTabIn{
+  from{opacity:.55;transform:translateY(3px)}
+  to{opacity:1;transform:none}
+}
+.detail-card{
+  box-shadow:0 12px 35px rgba(0,0,0,.12)!important;
+}
+.plan-card{
+  transition:transform .16s ease,border-color .16s ease,background .16s ease!important;
+}
+.plan-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(139,92,246,.24)!important;
+  background:linear-gradient(145deg,rgba(20,30,48,.94),rgba(10,16,27,.94))!important;
+}
+.settings-row{
+  min-height:42px;
+}
+.modal-actions{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:12;
+  padding:14px 0 2px!important;
+  background:linear-gradient(180deg,rgba(10,16,27,0),rgba(10,16,27,.98) 35%)!important;
+}
+.modal-body{
+  scrollbar-width:thin;
+}
+.modal-body::-webkit-scrollbar{
+  width:8px;
+}
+.modal-body::-webkit-scrollbar-thumb{
+  background:rgba(139,92,246,.42);
+  border-radius:99px;
+}
+.notice{
+  border-radius:13px!important;
+}
+.empty{
+  min-height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px!important;
+}
+@media(max-width:760px){
+  .panel-title{
+    min-height:auto;
+  }
+  .filter-bar{
+    gap:8px!important;
+  }
+  .course-tabs{
+    overflow-x:auto;
+    flex-wrap:nowrap!important;
+  }
+  .course-tabs .action-btn{
+    flex:0 0 auto;
+  }
+  .modal-actions{
+    padding-bottom:8px!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="login-shell"><div class="glow"></div><section class="login-card">
@@ -1754,6 +1956,294 @@ body:before{opacity:.16;background-size:32px 32px}
   .course-layer .modal-body .plan-list{grid-template-columns:1fr}
 }
 </style>
+
+<style>
+
+/* =========================================================
+   V32.1 — VISIBLE PREMIUM UI OVERRIDE
+   This block intentionally comes LAST so it overrides the
+   dashboard's earlier CSS without changing API/JS logic.
+   ========================================================= */
+:root{
+  --bg:#060811!important;
+  --bg2:#0a0e18!important;
+  --panel:#0d1320!important;
+  --panel2:#111a2a!important;
+  --line:rgba(148,163,184,.14)!important;
+  --line2:rgba(148,163,184,.22)!important;
+  --text:#f8fafc!important;
+  --muted:#94a3b8!important;
+  --accent:#8b5cf6!important;
+  --accent2:#22d3ee!important;
+  --violet:#a78bfa!important;
+  --cyan:#22d3ee!important;
+  --good:#34d399!important;
+  --warn:#fbbf24!important;
+  --danger:#fb7185!important;
+}
+html,body{background:#060811!important}
+body{
+  background:
+    radial-gradient(900px 500px at 0% -10%,rgba(139,92,246,.22),transparent 58%),
+    radial-gradient(850px 500px at 100% 0%,rgba(34,211,238,.13),transparent 55%),
+    linear-gradient(135deg,#060811 0%,#090d17 48%,#070a12 100%)!important;
+}
+.app{background:transparent!important}
+.sidebar{
+  background:linear-gradient(180deg,rgba(8,12,22,.98),rgba(5,8,15,.98))!important;
+  border-right:1px solid rgba(148,163,184,.12)!important;
+  box-shadow:16px 0 60px rgba(0,0,0,.28)!important;
+  position:relative;
+}
+.sidebar:before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,#8b5cf6,#22d3ee,transparent 85%);
+  opacity:.8;
+}
+.brand{padding:18px 14px 28px!important}
+.brand-mark{
+  width:40px!important;height:40px!important;border-radius:13px!important;
+  background:linear-gradient(135deg,#8b5cf6,#22d3ee)!important;
+  box-shadow:0 0 34px rgba(139,92,246,.38)!important;
+}
+.brand b{font-size:19px!important;color:#fff}
+.brand span{color:#8190a6!important}
+.eyebrow{color:#a78bfa!important}
+.nav{gap:7px!important}
+.nav button{
+  min-height:46px!important;
+  border:1px solid transparent!important;
+  border-radius:13px!important;
+  color:#aab6c7!important;
+  padding:0 13px!important;
+  transition:.16s ease!important;
+}
+.nav button:hover{
+  color:#fff!important;
+  background:rgba(139,92,246,.09)!important;
+  border-color:rgba(139,92,246,.15)!important;
+  transform:translateX(2px);
+}
+.nav button.active{
+  color:#fff!important;
+  background:linear-gradient(90deg,rgba(139,92,246,.23),rgba(34,211,238,.05))!important;
+  border-color:rgba(139,92,246,.28)!important;
+  box-shadow:inset 3px 0 #8b5cf6,0 10px 30px rgba(0,0,0,.18)!important;
+}
+.nav button .ico{color:#a78bfa!important}
+.sidebar-bottom{border-top:1px solid rgba(148,163,184,.10)!important;padding-top:18px!important}
+.health .dot{box-shadow:0 0 12px rgba(52,211,153,.8)!important}
+
+.main{
+  background:transparent!important;
+  padding:28px 34px 70px!important;
+}
+.topbar{
+  position:sticky!important;top:0!important;z-index:900!important;
+  margin:0 -34px 28px!important;padding:18px 34px!important;
+  background:rgba(6,8,17,.78)!important;
+  border-bottom:1px solid rgba(148,163,184,.10)!important;
+  backdrop-filter:blur(18px)!important;
+}
+.crumb{color:#64748b!important;font-size:12px!important}
+.crumb strong{color:#f8fafc!important;font-size:14px!important}
+.top-actions .ghost,.ghost{
+  border:1px solid rgba(148,163,184,.15)!important;
+  background:rgba(15,23,42,.62)!important;
+  color:#cbd5e1!important;
+  border-radius:11px!important;
+}
+.top-actions .ghost:hover,.ghost:hover{
+  border-color:rgba(139,92,246,.35)!important;
+  color:#fff!important;
+  background:rgba(139,92,246,.10)!important;
+}
+
+.hero{
+  gap:18px!important;
+}
+.hero-card{
+  min-height:190px!important;
+  padding:34px!important;
+  border:1px solid rgba(139,92,246,.22)!important;
+  border-radius:22px!important;
+  background:
+    radial-gradient(circle at 85% 15%,rgba(34,211,238,.12),transparent 32%),
+    radial-gradient(circle at 10% 100%,rgba(139,92,246,.16),transparent 38%),
+    linear-gradient(135deg,rgba(17,24,39,.95),rgba(10,15,26,.96))!important;
+  box-shadow:0 25px 80px rgba(0,0,0,.25)!important;
+  overflow:hidden;
+}
+.hero h1{
+  max-width:720px!important;
+  font-size:38px!important;
+  line-height:1.08!important;
+  letter-spacing:-.045em!important;
+  color:#fff!important;
+}
+.hero p{max-width:700px!important;color:#9aa8ba!important;line-height:1.7!important}
+.kicker{
+  color:#a78bfa!important;
+  letter-spacing:.16em!important;
+  font-weight:800!important;
+}
+
+.terminal{
+  border:1px solid rgba(34,211,238,.16)!important;
+  border-radius:18px!important;
+  background:rgba(4,8,15,.82)!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.24)!important;
+}
+
+.stat-grid{gap:14px!important;margin-top:18px!important}
+.stat{
+  min-height:118px!important;
+  padding:20px!important;
+  border:1px solid rgba(148,163,184,.13)!important;
+  border-radius:17px!important;
+  background:linear-gradient(145deg,rgba(17,25,39,.94),rgba(10,15,24,.94))!important;
+  box-shadow:0 15px 45px rgba(0,0,0,.16)!important;
+  position:relative;overflow:hidden;
+}
+.stat:after{
+  content:"";position:absolute;right:-35px;top:-35px;width:100px;height:100px;
+  border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.18),transparent 68%);
+}
+.stat-label{color:#8fa0b5!important}
+.stat-value{color:#fff!important;font-size:27px!important}
+.stat-meta{color:#64748b!important}
+
+.panel{
+  margin-top:18px!important;
+  border:1px solid rgba(148,163,184,.13)!important;
+  border-radius:18px!important;
+  background:linear-gradient(145deg,rgba(14,20,32,.96),rgba(9,14,23,.96))!important;
+  box-shadow:0 18px 60px rgba(0,0,0,.16)!important;
+  overflow:hidden!important;
+}
+.panel-title{
+  padding:20px 22px!important;
+  border-bottom:1px solid rgba(148,163,184,.10)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.025),transparent)!important;
+}
+.panel-title b{font-size:16px!important;color:#fff!important}
+.panel-title span{color:#7f8da1!important}
+
+.table-wrap{
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  overflow-x:auto!important;
+}
+table{min-width:760px!important}
+thead th{
+  background:rgba(255,255,255,.025)!important;
+  color:#8fa0b5!important;
+  font-size:10px!important;
+  letter-spacing:.10em!important;
+  text-transform:uppercase!important;
+}
+tbody tr{background:transparent!important;transition:.15s ease!important}
+tbody tr:hover{background:rgba(139,92,246,.055)!important}
+tbody td{border-bottom:1px solid rgba(148,163,184,.08)!important}
+
+.action-btn{
+  border:1px solid rgba(148,163,184,.15)!important;
+  border-radius:10px!important;
+  background:rgba(15,23,42,.72)!important;
+  color:#dbe4ef!important;
+  transition:.16s ease!important;
+}
+.action-btn:hover{transform:translateY(-1px)!important;border-color:rgba(139,92,246,.35)!important}
+.action-btn.primary,.primary{
+  background:linear-gradient(135deg,#8b5cf6,#6366f1)!important;
+  border-color:rgba(167,139,250,.55)!important;
+  color:#fff!important;
+  box-shadow:0 10px 28px rgba(99,102,241,.22)!important;
+}
+.action-btn.good{
+  background:rgba(52,211,153,.10)!important;
+  border-color:rgba(52,211,153,.22)!important;
+  color:#6ee7b7!important;
+}
+.action-btn.danger{
+  background:rgba(251,113,133,.08)!important;
+  border-color:rgba(251,113,133,.20)!important;
+  color:#fda4af!important;
+}
+
+input.search-input,select.select-dark,textarea.textarea-dark,input{
+  background:#080d16!important;
+  border:1px solid rgba(148,163,184,.16)!important;
+  color:#f8fafc!important;
+  border-radius:11px!important;
+}
+input.search-input:focus,select.select-dark:focus,textarea.textarea-dark:focus,input:focus{
+  border-color:rgba(139,92,246,.60)!important;
+  box-shadow:0 0 0 3px rgba(139,92,246,.11)!important;
+}
+
+.detail-card,.telegram-connect-panel,.settings-card,.plan-card,.broadcast-preview{
+  background:linear-gradient(145deg,rgba(17,25,39,.90),rgba(10,15,24,.90))!important;
+  border-color:rgba(148,163,184,.13)!important;
+  border-radius:15px!important;
+}
+.telegram-connect-panel{
+  border-color:rgba(139,92,246,.22)!important;
+  box-shadow:0 18px 50px rgba(0,0,0,.18)!important;
+}
+
+.status{
+  border-radius:999px!important;
+  padding:5px 10px!important;
+  font-weight:750!important;
+}
+.active-status{background:rgba(52,211,153,.10)!important;color:#6ee7b7!important;border-color:rgba(52,211,153,.20)!important}
+.pending-status{background:rgba(251,191,36,.10)!important;color:#fcd34d!important;border-color:rgba(251,191,36,.20)!important}
+.danger-status{background:rgba(251,113,133,.10)!important;color:#fda4af!important;border-color:rgba(251,113,133,.20)!important}
+
+.modal-backdrop{
+  background:rgba(2,5,12,.78)!important;
+  backdrop-filter:blur(8px)!important;
+}
+.modal{
+  border:1px solid rgba(148,163,184,.18)!important;
+  border-radius:22px!important;
+  background:linear-gradient(145deg,#111827,#0a101b)!important;
+  box-shadow:0 40px 120px rgba(0,0,0,.58)!important;
+}
+.modal-header{
+  background:linear-gradient(180deg,rgba(255,255,255,.035),transparent)!important;
+  border-bottom-color:rgba(148,163,184,.11)!important;
+}
+.modal-body{
+  scrollbar-color:rgba(139,92,246,.50) transparent!important;
+}
+.modal-body::-webkit-scrollbar{width:9px}
+.modal-body::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#8b5cf6,#22d3ee);
+  border-radius:99px;
+}
+
+.empty{
+  border:1px dashed rgba(148,163,184,.17)!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.012)!important;
+}
+.notice{border-radius:13px!important}
+
+@media(max-width:1100px){
+  .main{padding:22px 22px 50px!important}
+  .topbar{margin-left:-22px!important;margin-right:-22px!important;padding-left:22px!important;padding-right:22px!important}
+}
+@media(max-width:760px){
+  .main{padding:14px 12px 40px!important}
+  .topbar{margin:-14px -12px 18px!important;padding:14px 12px!important}
+  .hero h1{font-size:30px!important}
+  .hero-card{padding:24px!important}
+}
+
+</style>
 </head>
 <body>
 <div class="app">
@@ -1813,12 +2303,64 @@ body:before{opacity:.16;background-size:32px 32px}
 </main></div>
 <script>
 const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+
+
+/* ===== V32.5 BUTTON/WORKFLOW RESTORATION ===== */
+async function generateStudentInvite(id){if(!confirm('Generate a new one-use Telegram invite for this subscription?'))return;try{const r=await fetch('/dashboard/api/students/'+encodeURIComponent(currentStudent.user.id)+'/invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subscription_id:id})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Invite generation failed');await navigator.clipboard?.writeText(d.invite_link).catch(()=>{});alert('Invite generated:\n\n'+d.invite_link+'\n\nThe link was copied when browser permission allowed it.');await openStudent(currentStudent.user.id)}catch(e){alert(e.message)}}
+
+async function extendStudent(id,days=7){if(!confirm('Extend this subscription by '+days+' days?'))return;try{const r=await fetch('/dashboard/api/students/'+encodeURIComponent(currentStudent.user.id)+'/extend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subscription_id:id,days})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Extension failed');await openStudent(currentStudent.user.id);await refreshAll()}catch(e){alert(e.message)}}
+
+async function revokeStudent(id){if(!confirm('Revoke this access? Telegram invite links will be revoked and the member will be removed when permissions allow.'))return;try{const r=await fetch('/dashboard/api/students/'+encodeURIComponent(currentStudent.user.id)+'/revoke',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subscription_id:id})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Revoke failed');await openStudent(currentStudent.user.id);await refreshAll();if(d.warnings?.length)alert('Access revoked, but Telegram warnings occurred:\n\n'+d.warnings.join('\n'))}catch(e){alert(e.message)}}
+
+async function grantStudent(){const plan=document.getElementById('grantPlan')?.value;if(!plan)return alert('Select a plan first.');if(!confirm('Grant this plan to the customer?'))return;try{const r=await fetch('/dashboard/api/students/'+encodeURIComponent(currentStudent.user.id)+'/grant',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan_id:plan})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Grant failed');await openStudent(currentStudent.user.id);await refreshAll();if(d.warning)alert(d.warning);else alert('Access granted successfully.')}catch(e){alert(e.message)}}
+let currentCourse=null;
+
+async function testCourseTelegram(courseId){const box=document.getElementById('courseTelegramBox');if(box)box.innerHTML='<div class="notice">Testing Telegram connection and refreshing permissions…</div>';try{const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(courseId)+'/telegram/test',{method:'POST'});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Telegram test failed');await loadCourseTelegram(courseId);await refreshAll();alert('Telegram connection verified. Bot: '+d.bot_status+' · Invite: '+(d.can_invite_users?'YES':'NO')+' · Manage members: '+(d.can_manage_members?'YES':'NO'))}catch(e){if(box)box.innerHTML='<div class="notice danger">'+esc(e.message)+'</div>';alert(e.message)}}
+
+function openPlanForm(courseId,plan={}){const editing=!!plan.id;const body=`<div class="modal-body"><div class="form-grid"><div class="form-field"><label>Plan name</label><input id="planName" class="search-input" value="${esc(plan.name||'')}" placeholder="e.g. 30 Days"></div><div class="form-field"><label>Price (INR)</label><input id="planPrice" class="search-input" type="number" min="1" step="0.01" value="${esc(plan.price??'')}" placeholder="499"></div></div><div class="form-grid" style="margin-top:14px"><div class="form-field"><label>Plan type</label><select id="planType" class="select-dark" onchange="syncPlanDuration()"><option value="fixed" ${plan.plan_type!=='lifetime'?'selected':''}>Fixed Duration</option><option value="lifetime" ${plan.plan_type==='lifetime'?'selected':''}>Lifetime</option></select></div><div class="form-field"><label>Duration (days)</label><input id="planDuration" class="search-input" type="number" min="1" value="${esc(plan.duration_days??'')}" placeholder="30" ${plan.plan_type==='lifetime'?'disabled':''}></div></div><div class="form-field" style="margin-top:14px"><label>Description</label><textarea id="planDescription" class="textarea-dark" rows="3" placeholder="Plan description">${esc(plan.description||'')}</textarea></div><div class="form-field" style="margin-top:14px"><label>Payment QR</label><div class="upload-row"><input id="planQr" class="file-input" type="file" accept="image/png,image/jpeg,image/webp"><span class="muted">Required for new plans. Existing QR is kept when editing.</span></div><div id="planQrStatus" class="muted" style="margin-top:6px">${plan.qr_code_path?'QR already stored':'No QR uploaded'}</div></div><div class="modal-actions"><button class="action-btn" onclick="closePlanModal()">Cancel</button><button class="action-btn primary" onclick="saveCoursePlan('${esc(courseId)}',${editing?`'${esc(plan.id)}'`:'null'})">${editing?'Save Plan':'Create Plan'}</button></div></div>`;document.getElementById('planModalTitle').textContent=editing?'Edit Plan':'Add Plan';document.getElementById('planModalBody').innerHTML=body;document.getElementById('planModal').classList.add('open');document.body.classList.add('modal-open');window.currentPlan=plan;}
+
+function syncPlanDuration(){const lt=document.getElementById('planType')?.value==='lifetime',el=document.getElementById('planDuration');if(el){el.disabled=lt;if(lt)el.value='';}}
+
+function closePlanModal(){document.getElementById('planModal').classList.remove('open');document.body.classList.remove('modal-open');window.currentPlan=null}
+
+async function saveCoursePlan(courseId,planId){const name=(document.getElementById('planName')?.value||'').trim(),price=document.getElementById('planPrice')?.value,planType=document.getElementById('planType')?.value||'fixed',duration=document.getElementById('planDuration')?.value,description=(document.getElementById('planDescription')?.value||'').trim(),file=document.getElementById('planQr')?.files?.[0];if(!name)return alert('Plan name is required.');if(!price||Number(price)<=0)return alert('Enter a valid price.');if(planType==='fixed'&&(!duration||Number(duration)<=0))return alert('Enter duration in days.');try{let qr=window.currentPlan?.qr_code_path||'';if(file){const fd=new FormData();fd.append('file',file);const ur=await fetch('/dashboard/api/plans/qr-upload',{method:'POST',body:fd});const ud=await ur.json();if(!ur.ok)throw new Error(ud.detail||'QR upload failed');qr=ud.qr_code_path}if(!planId&&!qr)throw new Error('Payment QR is required for a new plan.');const url=planId?'/dashboard/api/plans/'+encodeURIComponent(planId):'/dashboard/api/courses/'+encodeURIComponent(courseId)+'/plans';const r=await fetch(url,{method:planId?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,price:Number(price),plan_type:planType,duration_days:planType==='lifetime'?null:Number(duration),description,qr_code_path:qr,currency:'INR'})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Plan save failed');closePlanModal();await refreshAll();await openCourse(courseId);alert(planId?'Plan updated successfully.':'Plan created successfully.')}catch(e){alert(e.message)}}
+
+async function editCoursePlan(planId){const p=(currentCourse?.plans||[]).find(x=>String(x.id)===String(planId));if(!p)return alert('Plan not found.');openPlanForm(currentCourse.id,p)}
+
+async function toggleCoursePlan(planId){if(!confirm('Change this plan status?'))return;try{const r=await fetch('/dashboard/api/plans/'+encodeURIComponent(planId)+'/toggle',{method:'POST'}),d=await r.json();if(!r.ok)throw new Error(d.detail||'Status update failed');await refreshAll();await openCourse(currentCourse.id)}catch(e){alert(e.message)}}
+
+async function deleteCoursePlan(planId){if(!confirm('Delete this plan permanently? If it has subscriptions or payments, deletion will be blocked.'))return;try{const r=await fetch('/dashboard/api/plans/'+encodeURIComponent(planId),{method:'DELETE'}),d=await r.json();if(!r.ok)throw new Error(d.detail||'Delete failed');await refreshAll();await openCourse(currentCourse.id);alert('Plan deleted.')}catch(e){alert(e.message)}}
+
+async function deleteCourse(id){if(!confirm('Delete this course permanently? If it has plans, payments, subscriptions or a Telegram group, deletion will be blocked.'))return;try{const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(id),{method:'DELETE'});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Delete failed');closeCourse();await refreshAll();alert('Course deleted.')}catch(e){alert(e.message)}}
+
+async function openPayment(id){try{const p=await api('/dashboard/api/payments/'+encodeURIComponent(id));document.getElementById('paymentModalTitle').textContent='Payment #'+(p.payment_number||p.id);document.getElementById('paymentModalBody').innerHTML=paymentDetailHtml(p);document.getElementById('paymentModal').classList.add('open')}catch(e){alert('Could not load payment: '+e.message)}}
+
+function closePayment(){document.getElementById('paymentModal').classList.remove('open')}
+
+function paymentDetailHtml(p){
+ const u=p.user||{},c=p.course||{},pl=p.plan||{},s=p.subscription;
+ const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Unknown';
+ let html=`<div class="modal-body"><div class="detail-grid">
+ <div class="detail-card"><div class="detail-label">Customer</div><div class="detail-value">${esc(name)}</div><div class="muted">${esc(u.username?'@'+u.username:(u.telegram_user_id||''))}</div></div>
+ <div class="detail-card"><div class="detail-label">Amount</div><div class="detail-value">${esc((p.currency||'')+' '+(p.amount??''))}</div></div>
+ <div class="detail-card"><div class="detail-label">Status</div><div class="detail-value"><span class="status ${statusClass(p.status)}">${esc(p.status)}</span></div></div></div>
+ <div class="section-head" style="margin-top:24px"><div><h2 style="font-size:18px">Purchase</h2><p>${esc(c.name||'Unknown course')} · ${esc(pl.name||'Unknown plan')}</p></div></div>
+ <div class="detail-grid"><div><div class="detail-label">Plan type</div><div class="detail-value">${esc(pl.plan_type||'—')}</div></div>
+ <div><div class="detail-label">Duration</div><div class="detail-value">${esc(pl.plan_type==='lifetime'?'Lifetime':((pl.duration_days||'—')+' days'))}</div></div>
+ <div><div class="detail-label">Submitted</div><div class="detail-value">${esc(p.submitted_at||'—')}</div></div></div>`;
+ if(p.screenshot_url) html+=`<div style="margin-top:20px"><div class="detail-label">Payment screenshot</div><a href="${esc(p.screenshot_url)}" target="_blank" rel="noopener"><img src="${esc(p.screenshot_url)}" alt="Payment screenshot" style="max-width:100%;max-height:420px;margin-top:10px;border:1px solid var(--line2);border-radius:12px"></a></div>`;
+ if(p.rejection_reason) html+=`<div class="notice danger" style="margin-top:16px">Rejection reason: ${esc(p.rejection_reason)}</div>`;
+ if(s) html+=`<div class="notice" style="margin-top:16px">Access already provisioned · ${esc(s.status)} · ${esc(s.is_lifetime?'Lifetime':(s.expires_at||'No expiry'))}</div>`;
+ if(p.status==='pending') html+=`<div class="modal-actions"><button class="action-btn good" onclick="approvePayment('${esc(p.id)}')">✓ Approve & Grant Access</button><button class="action-btn danger" onclick="rejectPayment('${esc(p.id)}')">✕ Reject</button></div>`;
+ else if(p.status==='approved'&&!s) html+=`<div class="notice warn" style="margin-top:16px">Payment is approved but course access is not provisioned. Use the existing Telegram Admin Bot to grant access after fixing the underlying Telegram issue.</div>`;
+ html+='</div>';return html;
+}
+/* ===== END V32.5 RESTORATION ===== */
 async function api(path){const r=await fetch(path,{credentials:'same-origin'});if(!r.ok)throw new Error(await r.text());return r.json()}
 function showPanel(id,btn){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));const target=document.getElementById(id);if(target)target.classList.add('active');const isOverview=id==='overview';document.getElementById('overviewView')?.classList.toggle('hidden',!isOverview);document.getElementById('moduleView')?.classList.toggle('hidden',isOverview);document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');const titles={overview:'Overview',students:'Students',subscriptions:'Subscriptions',courses:'Courses',payments:'Payments',plans:'Plan Overview',broadcast:'Broadcast',analytics:'Analytics',activity:'Activity Log',settings:'Settings & Security'};document.getElementById('pageTitle').textContent=titles[id]||'Dashboard';window.scrollTo({top:0,behavior:'smooth'});if(id==='overview')loadNotifications();}
 function table(headers,rows){if(!rows.length)return '<div class="empty">No records found.</div>';return '<table><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table>'}
 function statusClass(s){return s==='active'||s==='approved'?'active-status':s==='pending'?'pending-status':s==='expired'||s==='rejected'?'danger-status':''}
 let studentsCache=[];let currentStudent=null;let subscriptionsCache=[];let coursesCache=[];let plansCache=[];let paymentsCache=[];let activityCache=[];
-let currentCourse=null;let currentPlan=null;
 async function loadSubscriptions(){try{subscriptionsCache=await api('/dashboard/api/subscriptions');populateSubscriptionCourseFilter();renderSubscriptions();}catch(e){const el=document.getElementById('subscriptionsTable');if(el)el.innerHTML='<div class="notice danger">Subscriptions unavailable: '+esc(e.message)+'</div>';}}
 function populateSubscriptionCourseFilter(){const sel=document.getElementById('subscriptionCourseFilter');if(!sel)return;const cur=sel.value;sel.innerHTML='<option value="">All courses</option>'+coursesCache.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');if([...sel.options].some(o=>o.value===cur))sel.value=cur;}
 function renderSubscriptions(){const q=(document.getElementById('subscriptionSearch')?.value||'').trim().toLowerCase(),st=document.getElementById('subscriptionStatusFilter')?.value||'',course=document.getElementById('subscriptionCourseFilter')?.value||'';const list=subscriptionsCache.filter(x=>{const hay=[x.customer_name,x.username,x.telegram_user_id,x.course_name,x.plan_name].filter(Boolean).join(' ').toLowerCase();return(!q||hay.includes(q))&&(!st||x.management_status===st)&&(!course||String(x.course_id)===String(course));});document.getElementById('subscriptionsTable').innerHTML=table(['Student','Course / Plan','Status','Started','Expiry','Remaining','Actions'],list.map(x=>{const expiry=x.is_lifetime?'Lifetime':(x.expires_at||'—'),remain=x.is_lifetime?'Protected':(x.days_remaining==null?'—':x.days_remaining+' days');let actions=x.status==='active'?'<div class="row-actions"><button class="action-btn good" onclick="extendSubscriptionFromList(\''+esc(x.id)+'\',\''+esc(x.user_id)+'\')">+30 Days</button><button class="action-btn" onclick="changeSubscriptionPlan(\''+esc(x.id)+'\',\''+esc(x.course_id)+'\')">Change Plan</button><button class="action-btn danger" onclick="revokeSubscriptionFromList(\''+esc(x.id)+'\',\''+esc(x.user_id)+'\')">Revoke</button></div>':'<button class="action-btn" onclick="openStudent(\''+esc(x.user_id)+'\')">View Student</button>';return '<tr><td><b>'+esc(x.customer_name)+'</b><div class="muted">'+esc(x.username?'@'+x.username:(x.telegram_user_id||''))+'</div></td><td><b>'+esc(x.course_name)+'</b><div class="muted">'+esc(x.plan_name)+'</div></td><td><span class="status '+statusClass(x.management_status)+'">'+esc(x.management_status)+'</span></td><td>'+esc(x.started_at||'—')+'</td><td>'+esc(expiry)+'</td><td>'+esc(remain)+'</td><td>'+actions+'</td></tr>'; }));}
@@ -1868,30 +2410,199 @@ function courseFormHtml(c={}){
  const contentSection=editing?`<div class="section-head" style="margin-top:24px"><div><h2 style="font-size:18px">Course Content</h2><p>Manage lessons, ordering and Telegram/video mapping for this course.</p></div><button class="action-btn primary" onclick="openLessonForm('${esc(c.id)}')">+ Add Lesson</button></div><div class="plan-list">${lessonRows}</div>`:'';
  return '<div class="modal-body"><div class="form-grid"><div class="form-field"><label>Course name</label><input id="courseName" class="search-input" value="'+esc(c.name||'')+'" placeholder="e.g. Python Masterclass"></div><div class="form-field"><label>Status</label><select id="courseStatus" class="select-dark"><option value="active" '+(c.status==='active'||!c.status?'selected':'')+'>Active</option><option value="inactive" '+(c.status==='inactive'?'selected':'')+'>Inactive</option></select></div></div><div class="form-field" style="margin-top:14px"><label>Description</label><textarea id="courseDescription" class="textarea-dark" rows="5" placeholder="Course description">'+esc(c.description||'')+'</textarea></div>'+ (editing?'<div class="detail-grid" style="margin-top:18px"><div class="detail-card"><div class="detail-label">Slug</div><div class="detail-value">'+esc(c.slug||'—')+'</div></div><div class="detail-card"><div class="detail-label">Plans</div><div class="detail-value">'+esc(c.plan_count||0)+'</div></div><div class="detail-card"><div class="detail-label">Telegram group</div><div class="detail-value">'+esc(c.group_connected?(c.group_title||'Connected'):'Not connected')+'</div></div></div>':'')+telegramSection+planSection+contentSection+'<div class="modal-actions"><button class="action-btn primary" onclick="saveCourse('+ (editing?"'"+esc(c.id)+"'":"null") +')">'+(editing?'Save Changes':'Create Course')+'</button>'+(editing?'<button class="action-btn danger" onclick="deleteCourse(\''+esc(c.id)+'\')">Delete Course</button>':'')+'</div></div>';
 }
+
+/* ===== V32.3 RESTORED COURSE MANAGEMENT ===== */
+async function openCourse(courseId){
+  try{
+    const c = await api('/dashboard/api/courses/'+encodeURIComponent(courseId));
+    currentCourse = c;
+    const modal = document.getElementById('courseModal');
+    const title = document.getElementById('courseModalTitle');
+    const body = document.getElementById('courseModalBody');
+    if(!modal || !body){
+      console.error('Course modal elements are missing');
+      alert('Course management UI is unavailable. Please refresh the dashboard.');
+      return;
+    }
+    if(title) title.textContent = c.name || 'Manage Course';
+
+    const plans = Array.isArray(c.plans) ? c.plans : [];
+    const lessons = Array.isArray(c.lessons) ? c.lessons : [];
+    const tg = c.telegram || c.telegram_connection || c.telegram_access || null;
+
+    body.innerHTML = `
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:18px;min-height:0;overflow-y:auto">
+        <div class="detail-card" style="padding:18px">
+          <div class="section-head">
+            <div>
+              <div class="kicker">Course workspace</div>
+              <h2 style="margin:4px 0">${esc(c.name||'Untitled Course')}</h2>
+              <p>${esc(c.description||'Manage plans, lessons and Telegram access from one place.')}</p>
+            </div>
+            <span class="status ${statusClass(c.status)}">${esc(c.status||'unknown')}</span>
+          </div>
+        </div>
+
+        <div class="course-tabs" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="action-btn primary" onclick="showCourseTab('courseOverviewTab',this)">Overview</button>
+          <button class="action-btn" onclick="showCourseTab('coursePlansTab',this)">Plans</button>
+          <button class="action-btn" onclick="showCourseTab('courseLessonsTab',this)">Content</button>
+          <button class="action-btn" onclick="showCourseTab('courseTelegramTab',this)">Telegram</button>
+        </div>
+
+        <div id="courseOverviewTab" class="course-tab">
+          <div class="detail-card" style="padding:18px">
+            <div class="section-head"><div><b>Course Overview</b><p>Basic course information.</p></div></div>
+            <div class="settings-list">
+              <div class="settings-row"><span>Name</span><b>${esc(c.name||'—')}</b></div>
+              <div class="settings-row"><span>Slug</span><b>${esc(c.slug||'—')}</b></div>
+              <div class="settings-row"><span>Status</span><b>${esc(c.status||'—')}</b></div>
+              <div class="settings-row"><span>Plans</span><b>${plans.length}</b></div>
+              <div class="settings-row"><span>Lessons</span><b>${lessons.length}</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="coursePlansTab" class="course-tab" style="display:none">
+          <div class="detail-card" style="padding:18px">
+            <div class="section-head">
+              <div><b>Course Plans</b><p>Create and manage pricing plans.</p></div>
+              <button class="action-btn primary" onclick="openPlanForm('${esc(c.id)}')">+ Add Plan</button>
+            </div>
+            <div class="plan-list">
+              ${plans.length ? plans.map(p=>`
+                <div class="plan-card">
+                  <div class="plan-card-head">
+                    <div><b>${esc(p.name||'Unnamed Plan')}</b><div class="muted">${esc(p.currency||'')} ${esc(p.price??'')} · ${esc(p.plan_type||'')}</div></div>
+                    <span class="status ${p.is_active?'active-status':''}">${p.is_active?'Active':'Inactive'}</span>
+                  </div>
+                  <div class="row-actions" style="margin-top:10px">
+                    <button class="action-btn" onclick="editCoursePlan('${esc(p.id)}','${esc(c.id)}')">Edit</button>
+                    <button class="action-btn ${p.is_active?'danger':'good'}" onclick="toggleCoursePlan('${esc(p.id)}','${esc(c.id)}',${p.is_active?'false':'true'})">${p.is_active?'Deactivate':'Activate'}</button>
+                  </div>
+                </div>`).join('') : '<div class="empty">No plans yet.</div>'}
+            </div>
+          </div>
+        </div>
+
+        <div id="courseLessonsTab" class="course-tab" style="display:none">
+          <div class="detail-card" style="padding:18px">
+            <div class="section-head">
+              <div><b>Course Content</b><p>Manage lessons and protected course content.</p></div>
+              <button class="action-btn primary" onclick="openLessonForm('${esc(c.id)}')">+ Add Lesson</button>
+            </div>
+            <div class="plan-list">
+              ${lessons.length ? lessons.map((l,i)=>`
+                <div class="plan-card">
+                  <div class="plan-card-head">
+                    <div><b>${i+1}. ${esc(l.title||'Untitled Lesson')}</b><div class="muted">${esc(l.content_type||'content')}</div></div>
+                    <span class="status ${l.is_published!==false?'active-status':''}">${l.is_published!==false?'Published':'Draft'}</span>
+                  </div>
+                  <div class="row-actions" style="margin-top:10px">
+                    <button class="action-btn" onclick="editCourseLesson('${esc(l.id)}','${esc(c.id)}')">Edit</button>
+                    <button class="action-btn ${l.is_published!==false?'danger':'good'}" onclick="toggleCourseLesson('${esc(l.id)}','${esc(c.id)}',${l.is_published!==false?'false':'true'})">${l.is_published!==false?'Unpublish':'Publish'}</button>
+                    <button class="action-btn danger" onclick="deleteCourseLesson('${esc(l.id)}','${esc(c.id)}')">Delete</button>
+                  </div>
+                </div>`).join('') : '<div class="empty">No lessons yet.</div>'}
+            </div>
+          </div>
+        </div>
+
+        <div id="courseTelegramTab" class="course-tab" style="display:none">
+          <div id="courseTelegramBox" class="detail-card" style="padding:18px">
+            <div class="section-head">
+              <div><b>Telegram Access</b><p>Connect this course to a private group, supergroup or channel.</p></div>
+            </div>
+            <div id="courseTelegramContent"><div class="empty">Loading Telegram status…</div></div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="action-btn" onclick="closeCourse()">Close</button>
+        </div>
+      </div>`;
+
+    modal.classList.add('open');
+    document.body.classList.add('modal-open');
+    showCourseTab('courseOverviewTab', document.querySelector('#courseModal .course-tabs .action-btn'));
+    await loadCourseTelegram(c.id);
+  }catch(e){
+    console.error(e);
+    alert(e.message||'Could not open course.');
+  }
+}
+
+function showCourseTab(id, btn){
+  document.querySelectorAll('#courseModal .course-tab').forEach(x=>x.style.display='none');
+  const el=document.getElementById(id);
+  if(el) el.style.display='block';
+  document.querySelectorAll('#courseModal .course-tabs .action-btn').forEach(x=>x.classList.remove('primary'));
+  if(btn) btn.classList.add('primary');
+}
+
+function closeCourse(){
+  document.getElementById('courseModal')?.classList.remove('open');
+  if(!document.getElementById('planModal')?.classList.contains('open') &&
+     !document.getElementById('lessonModal')?.classList.contains('open')){
+    document.body.classList.remove('modal-open');
+  }
+}
+
+function openCourseCreate(){
+  const modal=document.getElementById('courseModal');
+  const title=document.getElementById('courseModalTitle');
+  const body=document.getElementById('courseModalBody');
+  if(!modal||!body){alert('Course modal is unavailable.');return;}
+  if(title) title.textContent='Create Course';
+  body.innerHTML=`<div class="modal-body" style="overflow-y:auto">
+    <div class="form-grid">
+      <div class="form-field"><label>Course name</label><input id="newCourseName" class="search-input" placeholder="Course name"></div>
+      <div class="form-field"><label>Status</label><select id="newCourseStatus" class="select-dark"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+    </div>
+    <div class="form-field" style="margin-top:14px"><label>Description</label><textarea id="newCourseDescription" class="textarea-dark" rows="4" placeholder="Course description"></textarea></div>
+    <div class="modal-actions">
+      <button class="action-btn primary" onclick="saveCourse()">Create Course</button>
+      <button class="action-btn" onclick="closeCourse()">Cancel</button>
+    </div>
+  </div>`;
+  modal.classList.add('open');
+  document.body.classList.add('modal-open');
+}
+
+async function saveCourse(courseId=null){
+  const payload={
+    name:(document.getElementById('newCourseName')?.value||'').trim(),
+    description:(document.getElementById('newCourseDescription')?.value||'').trim(),
+    status:document.getElementById('newCourseStatus')?.value||'active'
+  };
+  if(!payload.name)return alert('Course name is required.');
+  try{
+    const url=courseId?'/dashboard/api/courses/'+encodeURIComponent(courseId):'/dashboard/api/courses';
+    const r=await fetch(url,{method:courseId?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json(); if(!r.ok) throw new Error(d.detail||'Course save failed');
+    closeCourse(); await refreshAll(); alert(courseId?'Course updated.':'Course created.');
+  }catch(e){alert(e.message)}
+}
+
+async function toggleCourse(courseId){
+  try{
+    const c=await api('/dashboard/api/courses/'+encodeURIComponent(courseId));
+    const next=c.status==='active'?'inactive':'active';
+    const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(courseId),{
+      method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:next})
+    });
+    const d=await r.json();if(!r.ok)throw new Error(d.detail||'Course update failed');
+    await refreshAll();
+  }catch(e){alert(e.message)}
+}
+/* ===== END V32.3 RESTORED COURSE MANAGEMENT ===== */
+
 function closeLessonModal(){document.getElementById('lessonModal')?.classList.remove('open');if(!document.getElementById('courseModal')?.classList.contains('open')&&!document.getElementById('planModal')?.classList.contains('open'))document.body.classList.remove('modal-open')}
 function openLessonForm(courseId,lesson={}){const editing=!!lesson.id;document.getElementById('lessonModalTitle').textContent=editing?'Edit Lesson':'Add Lesson';document.getElementById('lessonModalBody').innerHTML=`<div class="modal-body"><div class="form-grid"><div class="form-field"><label>Lesson title</label><input id="lessonTitle" class="search-input" value="${esc(lesson.title||'')}" placeholder="e.g. Introduction"></div><div class="form-field"><label>Order</label><input id="lessonOrder" class="search-input" type="number" min="0" value="${esc(lesson.sort_order??0)}"></div></div><div class="form-grid" style="margin-top:14px"><div class="form-field"><label>Content type</label><select id="lessonType" class="select-dark"><option value="video" ${lesson.content_type==='video'||!lesson.content_type?'selected':''}>Video / URL</option><option value="telegram" ${lesson.content_type==='telegram'?'selected':''}>Telegram message</option><option value="link" ${lesson.content_type==='link'?'selected':''}>External link</option><option value="text" ${lesson.content_type==='text'?'selected':''}>Text / Notes</option></select></div><div class="form-field"><label>Content URL</label><input id="lessonUrl" class="search-input" value="${esc(lesson.content_url||'')}" placeholder="https://…"></div></div><div class="form-field" style="margin-top:14px"><label>Telegram message ID <span class="muted">(optional)</span></label><input id="lessonTelegramId" class="search-input" value="${esc(lesson.telegram_message_id||'')}" placeholder="12345"></div><div class="form-field" style="margin-top:14px"><label>Description / notes</label><textarea id="lessonDescription" class="textarea-dark" rows="4" placeholder="Short lesson description">${esc(lesson.description||'')}</textarea></div><label style="display:flex;gap:8px;align-items:center;margin-top:14px"><input id="lessonPublished" type="checkbox" ${lesson.is_published===false?'':'checked'}> Published</label><div class="modal-actions"><button class="action-btn primary" onclick="saveCourseLesson('${esc(courseId)}'${editing?`, '${esc(lesson.id)}'`:''})">${editing?'Save Changes':'Create Lesson'}</button><button class="action-btn" onclick="closeLessonModal()">Cancel</button></div></div>`;document.getElementById('lessonModal').classList.add('open');document.body.classList.add('modal-open')}
 async function saveCourseLesson(courseId,lessonId=null){const payload={title:(document.getElementById('lessonTitle')?.value||'').trim(),sort_order:Number(document.getElementById('lessonOrder')?.value||0),content_type:document.getElementById('lessonType')?.value||'video',content_url:(document.getElementById('lessonUrl')?.value||'').trim(),telegram_message_id:(document.getElementById('lessonTelegramId')?.value||'').trim(),description:(document.getElementById('lessonDescription')?.value||'').trim(),is_published:!!document.getElementById('lessonPublished')?.checked};if(!payload.title)return alert('Lesson title is required.');try{const url='/dashboard/api/courses/'+encodeURIComponent(courseId)+'/lessons'+(lessonId?'/'+encodeURIComponent(lessonId):'');const r=await fetch(url,{method:lessonId?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Lesson save failed');closeLessonModal();await openCourse(courseId);await refreshAll();alert(lessonId?'Lesson updated.':'Lesson created.')}catch(e){alert(e.message)}}
 async function editCourseLesson(lessonId,courseId){try{const c=await api('/dashboard/api/courses/'+encodeURIComponent(courseId));const l=(c.lessons||[]).find(x=>String(x.id)===String(lessonId));if(!l)return alert('Lesson not found.');openLessonForm(courseId,l)}catch(e){alert(e.message)}}
 async function toggleCourseLesson(lessonId,courseId,published){try{const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(courseId)+'/lessons/'+encodeURIComponent(lessonId),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({is_published:published})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Lesson update failed');await openCourse(courseId);await refreshAll()}catch(e){alert(e.message)}}
 async function deleteCourseLesson(lessonId,courseId){if(!confirm('Delete this lesson? This cannot be undone.'))return;try{const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(courseId)+'/lessons/'+encodeURIComponent(lessonId),{method:'DELETE'});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Lesson delete failed');await openCourse(courseId);await refreshAll();alert('Lesson deleted.')}catch(e){alert(e.message)}}
-
-async function testCourseTelegram(courseId){const box=document.getElementById('courseTelegramBox');if(box)box.innerHTML='<div class="notice">Testing Telegram connection and refreshing permissions…</div>';try{const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(courseId)+'/telegram/test',{method:'POST'});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Telegram test failed');await loadCourseTelegram(courseId);await refreshAll();alert('Telegram connection verified. Bot: '+d.bot_status+' · Invite: '+(d.can_invite_users?'YES':'NO')+' · Manage members: '+(d.can_manage_members?'YES':'NO'))}catch(e){if(box)box.innerHTML='<div class="notice danger">'+esc(e.message)+'</div>';alert(e.message)}}
-
-function openPlanForm(courseId,plan={}){const editing=!!plan.id;const body=`<div class="modal-body"><div class="form-grid"><div class="form-field"><label>Plan name</label><input id="planName" class="search-input" value="${esc(plan.name||'')}" placeholder="e.g. 30 Days"></div><div class="form-field"><label>Price (INR)</label><input id="planPrice" class="search-input" type="number" min="1" step="0.01" value="${esc(plan.price??'')}" placeholder="499"></div></div><div class="form-grid" style="margin-top:14px"><div class="form-field"><label>Plan type</label><select id="planType" class="select-dark" onchange="syncPlanDuration()"><option value="fixed" ${plan.plan_type!=='lifetime'?'selected':''}>Fixed Duration</option><option value="lifetime" ${plan.plan_type==='lifetime'?'selected':''}>Lifetime</option></select></div><div class="form-field"><label>Duration (days)</label><input id="planDuration" class="search-input" type="number" min="1" value="${esc(plan.duration_days??'')}" placeholder="30" ${plan.plan_type==='lifetime'?'disabled':''}></div></div><div class="form-field" style="margin-top:14px"><label>Description</label><textarea id="planDescription" class="textarea-dark" rows="3" placeholder="Plan description">${esc(plan.description||'')}</textarea></div><div class="form-field" style="margin-top:14px"><label>Payment QR</label><div class="upload-row"><input id="planQr" class="file-input" type="file" accept="image/png,image/jpeg,image/webp"><span class="muted">Required for new plans. Existing QR is kept when editing.</span></div><div id="planQrStatus" class="muted" style="margin-top:6px">${plan.qr_code_path?'QR already stored':'No QR uploaded'}</div></div><div class="modal-actions"><button class="action-btn" onclick="closePlanModal()">Cancel</button><button class="action-btn primary" onclick="saveCoursePlan('${esc(courseId)}',${editing?`'${esc(plan.id)}'`:'null'})">${editing?'Save Plan':'Create Plan'}</button></div></div>`;document.getElementById('planModalTitle').textContent=editing?'Edit Plan':'Add Plan';document.getElementById('planModalBody').innerHTML=body;document.getElementById('planModal').classList.add('open');document.body.classList.add('modal-open');window.currentPlan=plan;}
-function syncPlanDuration(){const lt=document.getElementById('planType')?.value==='lifetime',el=document.getElementById('planDuration');if(el){el.disabled=lt;if(lt)el.value='';}}
-function closePlanModal(){document.getElementById('planModal').classList.remove('open');document.body.classList.remove('modal-open');window.currentPlan=null}
-async function saveCoursePlan(courseId,planId){const name=(document.getElementById('planName')?.value||'').trim(),price=document.getElementById('planPrice')?.value,planType=document.getElementById('planType')?.value||'fixed',duration=document.getElementById('planDuration')?.value,description=(document.getElementById('planDescription')?.value||'').trim(),file=document.getElementById('planQr')?.files?.[0];if(!name)return alert('Plan name is required.');if(!price||Number(price)<=0)return alert('Enter a valid price.');if(planType==='fixed'&&(!duration||Number(duration)<=0))return alert('Enter duration in days.');try{let qr=window.currentPlan?.qr_code_path||'';if(file){const fd=new FormData();fd.append('file',file);const ur=await fetch('/dashboard/api/plans/qr-upload',{method:'POST',body:fd});const ud=await ur.json();if(!ur.ok)throw new Error(ud.detail||'QR upload failed');qr=ud.qr_code_path}if(!planId&&!qr)throw new Error('Payment QR is required for a new plan.');const url=planId?'/dashboard/api/plans/'+encodeURIComponent(planId):'/dashboard/api/courses/'+encodeURIComponent(courseId)+'/plans';const r=await fetch(url,{method:planId?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,price:Number(price),plan_type:planType,duration_days:planType==='lifetime'?null:Number(duration),description,qr_code_path:qr,currency:'INR'})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Plan save failed');closePlanModal();await refreshAll();await openCourse(courseId);alert(planId?'Plan updated successfully.':'Plan created successfully.')}catch(e){alert(e.message)}}
-async function editCoursePlan(planId){const p=(currentCourse?.plans||[]).find(x=>String(x.id)===String(planId));if(!p)return alert('Plan not found.');openPlanForm(currentCourse.id,p)}
-async function toggleCoursePlan(planId){if(!confirm('Change this plan status?'))return;try{const r=await fetch('/dashboard/api/plans/'+encodeURIComponent(planId)+'/toggle',{method:'POST'}),d=await r.json();if(!r.ok)throw new Error(d.detail||'Status update failed');await refreshAll();await openCourse(currentCourse.id)}catch(e){alert(e.message)}}
-async function deleteCoursePlan(planId){if(!confirm('Delete this plan permanently? If it has subscriptions or payments, deletion will be blocked.'))return;try{const r=await fetch('/dashboard/api/plans/'+encodeURIComponent(planId),{method:'DELETE'}),d=await r.json();if(!r.ok)throw new Error(d.detail||'Delete failed');await refreshAll();await openCourse(currentCourse.id);alert('Plan deleted.')}catch(e){alert(e.message)}}
-
-function openCourseCreate(){currentCourse=null;document.getElementById('courseModalTitle').textContent='New Course';document.getElementById('courseModalBody').innerHTML=courseFormHtml({});document.getElementById('courseModal').classList.add('open');document.body.classList.add('modal-open')}
-async function openCourse(id){try{const c=await api('/dashboard/api/courses/'+encodeURIComponent(id));currentCourse=c;document.getElementById('courseModalTitle').textContent=c.name||'Course';document.getElementById('courseModalBody').innerHTML=courseFormHtml(c);document.getElementById('courseModal').classList.add('open');document.body.classList.add('modal-open');loadCourseTelegram(id)}catch(e){alert('Could not load course: '+e.message)}}
-function closeCourse(){document.getElementById('courseModal').classList.remove('open');if(!document.getElementById('planModal').classList.contains('open'))document.body.classList.remove('modal-open');currentCourse=null}
-async function saveCourse(id){const name=(document.getElementById('courseName')?.value||'').trim();const description=(document.getElementById('courseDescription')?.value||'').trim();const status=document.getElementById('courseStatus')?.value||'active';if(!name)return alert('Course name is required.');const editing=!!id;try{const r=await fetch(editing?'/dashboard/api/courses/'+encodeURIComponent(id):'/dashboard/api/courses',{method:editing?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,description,status})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Course save failed');closeCourse();await refreshAll();alert(editing?'Course updated successfully.':'Course created successfully.')}catch(e){alert(e.message)}}
-async function toggleCourse(id){if(!confirm('Change this course status?'))return;try{const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(id)+'/toggle',{method:'POST'});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Status update failed');await refreshAll();alert('Course is now '+d.status+'.')}catch(e){alert(e.message)}}
-async function deleteCourse(id){if(!confirm('Delete this course permanently? If it has plans, payments, subscriptions or a Telegram group, deletion will be blocked.'))return;try{const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(id),{method:'DELETE'});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Delete failed');closeCourse();await refreshAll();alert('Course deleted.')}catch(e){alert(e.message)}}
-
 
 function telegramStatusClass(v){return v?'active-status':'danger-status'}
 function telegramTypeLabel(t){return t==='channel'?'Channel':(t==='supergroup'?'Supergroup':(t==='group'?'Group':'Telegram'))}
@@ -1925,30 +2636,6 @@ async function revokeCourseInvite(courseId){if(!confirm('Revoke the current cour
 async function requestCourseTelegramConnection(courseId){const box=document.getElementById('courseTelegramBox');if(box)box.innerHTML='<div class="notice">Creating a secure Admin Bot connection code…</div>';try{const r=await fetch('/dashboard/api/courses/'+encodeURIComponent(courseId)+'/telegram/request',{method:'POST'});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Could not create connection request');await loadCourseTelegram(courseId);alert('Connection code: '+d.connection_code+'\n\nAdd the Admin Bot as administrator to your private Group / Supergroup / Channel, then send:\n/connect '+d.connection_code+'\n\ninside that Telegram destination.');}catch(e){if(box)box.innerHTML='<div class="notice danger">'+esc(e.message)+'</div>';alert(e.message)}}
 async function approvePayment(id){if(!confirm('Approve this payment and provision course access?'))return;try{const r=await fetch('/dashboard/api/payments/'+encodeURIComponent(id)+'/approve',{method:'POST',headers:{'Content-Type':'application/json'}});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Approval failed');closePayment();await refreshAll();alert('Payment approved and course access provisioned.')}catch(e){alert(e.message)}}
 async function rejectPayment(id){const reason=prompt('Optional rejection reason:','');if(reason===null)return;if(!confirm('Reject this payment?'))return;try{const r=await fetch('/dashboard/api/payments/'+encodeURIComponent(id)+'/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Rejection failed');closePayment();await refreshAll();alert('Payment rejected.')}catch(e){alert(e.message)}}
-
-async function openPayment(id){try{const p=await api('/dashboard/api/payments/'+encodeURIComponent(id));document.getElementById('paymentModalTitle').textContent='Payment #'+(p.payment_number||p.id);document.getElementById('paymentModalBody').innerHTML=paymentDetailHtml(p);document.getElementById('paymentModal').classList.add('open')}catch(e){alert('Could not load payment: '+e.message)}}
-function closePayment(){document.getElementById('paymentModal').classList.remove('open')}
-function paymentDetailHtml(p){
- const u=p.user||{},c=p.course||{},pl=p.plan||{},s=p.subscription;
- const name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Unknown';
- let html=`<div class="modal-body"><div class="detail-grid">
- <div class="detail-card"><div class="detail-label">Customer</div><div class="detail-value">${esc(name)}</div><div class="muted">${esc(u.username?'@'+u.username:(u.telegram_user_id||''))}</div></div>
- <div class="detail-card"><div class="detail-label">Amount</div><div class="detail-value">${esc((p.currency||'')+' '+(p.amount??''))}</div></div>
- <div class="detail-card"><div class="detail-label">Status</div><div class="detail-value"><span class="status ${statusClass(p.status)}">${esc(p.status)}</span></div></div></div>
- <div class="section-head" style="margin-top:24px"><div><h2 style="font-size:18px">Purchase</h2><p>${esc(c.name||'Unknown course')} · ${esc(pl.name||'Unknown plan')}</p></div></div>
- <div class="detail-grid"><div><div class="detail-label">Plan type</div><div class="detail-value">${esc(pl.plan_type||'—')}</div></div>
- <div><div class="detail-label">Duration</div><div class="detail-value">${esc(pl.plan_type==='lifetime'?'Lifetime':((pl.duration_days||'—')+' days'))}</div></div>
- <div><div class="detail-label">Submitted</div><div class="detail-value">${esc(p.submitted_at||'—')}</div></div></div>`;
- if(p.screenshot_url) html+=`<div style="margin-top:20px"><div class="detail-label">Payment screenshot</div><a href="${esc(p.screenshot_url)}" target="_blank" rel="noopener"><img src="${esc(p.screenshot_url)}" alt="Payment screenshot" style="max-width:100%;max-height:420px;margin-top:10px;border:1px solid var(--line2);border-radius:12px"></a></div>`;
- if(p.rejection_reason) html+=`<div class="notice danger" style="margin-top:16px">Rejection reason: ${esc(p.rejection_reason)}</div>`;
- if(s) html+=`<div class="notice" style="margin-top:16px">Access already provisioned · ${esc(s.status)} · ${esc(s.is_lifetime?'Lifetime':(s.expires_at||'No expiry'))}</div>`;
- if(p.status==='pending') html+=`<div class="modal-actions"><button class="action-btn good" onclick="approvePayment('${esc(p.id)}')">✓ Approve & Grant Access</button><button class="action-btn danger" onclick="rejectPayment('${esc(p.id)}')">✕ Reject</button></div>`;
- else if(p.status==='approved'&&!s) html+=`<div class="notice warn" style="margin-top:16px">Payment is approved but course access is not provisioned. Use the existing Telegram Admin Bot to grant access after fixing the underlying Telegram issue.</div>`;
- html+='</div>';return html;
-}
-async function approvePayment(id){if(!confirm('Approve this payment and provision course access?'))return;try{const r=await fetch('/dashboard/api/payments/'+encodeURIComponent(id)+'/approve',{method:'POST',headers:{'Content-Type':'application/json'}});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Approval failed');closePayment();await refreshAll();alert('Payment approved and course access provisioned.')}catch(e){alert(e.message)}}
-async function rejectPayment(id){const reason=prompt('Optional rejection reason:','');if(reason===null)return;if(!confirm('Reject this payment?'))return;try{const r=await fetch('/dashboard/api/payments/'+encodeURIComponent(id)+'/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason})});const d=await r.json();if(!r.ok)throw new Error(d.detail||'Rejection failed');closePayment();await refreshAll();alert('Payment rejected.')}catch(e){alert(e.message)}}
-
 
 let broadcastPreviewData=null;
 function loadBroadcast(){
