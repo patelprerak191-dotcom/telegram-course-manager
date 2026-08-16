@@ -492,7 +492,7 @@ async def dashboard_update_course(course_id: str, payload: dict = Body(...), _: 
     except Exception as exc:
         print("Dashboard update course error:", repr(exc))
         raise HTTPException(status_code=500, detail=str(exc))
-    log_activity("course_updated", "course", course_id, f"Updated course: {name if "name" in locals() else course_id}")
+    log_activity("course_updated", "course", course_id, f"Updated course: {name if 'name' in locals() else course_id}")
     return {"ok": True, "course": response.data[0] if response.data else {"id": course_id, **update}}
 
 
@@ -1016,7 +1016,7 @@ async def dashboard_reject_payment(payment_id: str, payload: dict | None = Body(
         )
     except Exception as exc:
         print("Dashboard rejection notification error:", repr(exc))
-    log_activity("payment_rejected", "payment", payment.get("id"), f"Payment #{payment.get("payment_number")} rejected")
+    log_activity("payment_rejected", "payment", payment.get("id"), f"Payment #{payment.get('payment_number')} rejected")
     return {"ok": True, "payment": updated.data[0]}
 
 
