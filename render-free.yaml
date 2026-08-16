@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: telegram-course-manager
+    runtime: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python web_runner.py
+    healthCheckPath: /health
+    envVars:
+      - key: CUSTOMER_BOT_TOKEN
+        sync: false
+      - key: ADMIN_BOT_TOKEN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: ADMIN_TELEGRAM_ID
+        sync: false
+      - key: ADMIN_DASHBOARD_USERNAME
+        sync: false
+      - key: ADMIN_DASHBOARD_PASSWORD
+        sync: false
+      - key: DASHBOARD_ADMIN_USERNAME
+        sync: false
+      - key: DASHBOARD_ADMIN_PASSWORD
+        sync: false
+      - key: DASHBOARD_SESSION_SECRET
+        sync: false

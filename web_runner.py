@@ -7,7 +7,10 @@ import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from app.customer_dashboard import app as customer_dashboard_app
+
 from fastapi.responses import JSONResponse
+from app.dashboard import router as dashboard_router
 
 
 # ============================================================
@@ -282,26 +285,42 @@ async def lifespan(app: FastAPI):
         flush=True,
     )
 
-    # Start all child services.
-    for name, command in PROCESS_COMMANDS:
+    dashboard_only = os.getenv("DASHBOARD_ONLY", "false").strip().lower() in {"1", "true", "yes", "on"}
 
-        start_process(
-            name,
-            command,
+    if dashboard_only:
+
+        print(
+            "[RUNNER] DASHBOARD_ONLY=true",
+            flush=True,
         )
 
-    # Start process monitor.
-    monitor_thread = threading.Thread(
-        target=monitor_processes,
-        daemon=True,
-    )
+        print(
+            "[RUNNER] Telegram bots and expiry worker will NOT be started.",
+            flush=True,
+        )
 
-    monitor_thread.start()
+    else:
 
-    print(
-        "[RUNNER] All child processes started.",
-        flush=True,
-    )
+        # Start all child services.
+        for name, command in PROCESS_COMMANDS:
+
+            start_process(
+                name,
+                command,
+            )
+
+        # Start process monitor.
+        monitor_thread = threading.Thread(
+            target=monitor_processes,
+            daemon=True,
+        )
+
+        monitor_thread.start()
+
+        print(
+            "[RUNNER] All child processes started.",
+            flush=True,
+        )
 
     yield
 
@@ -317,6 +336,12 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+# Customer Dashboard — same Render service, same process
+app.mount("/customer", customer_dashboard_app)
+
+
+app.include_router(dashboard_router)
 
 
 # ============================================================
@@ -345,6 +370,22 @@ async def root_head():
 
 @app.get("/health")
 async def health():
+
+    dashboard_only = os.getenv("DASHBOARD_ONLY", "false").strip().lower() in {"1", "true", "yes", "on"}
+
+    if dashboard_only:
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": "healthy",
+                "mode": "dashboard_only",
+                "services": {
+                    "dashboard": {"running": True},
+                    "telegram_bots": {"running": False, "disabled": True},
+                    "expiry_worker": {"running": False, "disabled": True},
+                },
+            },
+        )
 
     child_status = {}
 

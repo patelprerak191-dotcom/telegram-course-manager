@@ -664,6 +664,142 @@ async def course_description_handler(
 
 
 # ============================================================
+# DASHBOARD CONNECTION REQUEST HELPERS
+# ============================================================
+
+async def get_dashboard_connection_request(code: str):
+    """Find a pending dashboard-generated connection request."""
+    try:
+        response = (
+            supabase.table("telegram_connection_requests")
+            .select("*")
+            .eq("connection_code", code)
+            .eq("status", "pending")
+            .limit(1)
+            .execute()
+        )
+        return response.data[0] if response.data else None
+    except Exception as error:
+        print("[CONNECT] dashboard request lookup failed:", repr(error))
+        return None
+
+
+async def complete_dashboard_connection(
+    *,
+    bot: Bot,
+    chat,
+    code: str,
+    source: str,
+):
+    """Verify a Telegram destination and attach it to an existing dashboard course."""
+    request = await get_dashboard_connection_request(code)
+    if not request:
+        return False, "❌ Invalid or expired connection code.\n\nCreate a new code from Dashboard → Manage Course → Telegram Access."
+
+    course_id = request.get("course_id")
+    if not course_id:
+        return False, "❌ This connection request is missing its course. Create a new connection code."
+
+    try:
+        member = await bot.get_chat_member(chat_id=chat.id, user_id=bot.id)
+        status = getattr(member, "status", "")
+        if status not in {"administrator", "creator"}:
+            return False, "❌ Admin Bot is not an administrator of this Telegram destination."
+
+        can_invite = bool(getattr(member, "can_invite_users", False))
+        can_manage = bool(getattr(member, "can_restrict_members", False))
+        if status == "creator":
+            can_invite = True
+            can_manage = True
+
+        # Groups/supergroups require member-management capability in addition to invites.
+        if chat.type in {"group", "supergroup"} and (not can_invite or not can_manage):
+            return False, (
+                "⚠️ GROUP PERMISSIONS INCOMPLETE\n\n"
+                f"Invite Users: {'🟢 YES' if can_invite else '🔴 NO'}\n"
+                f"Manage Members: {'🟢 YES' if can_manage else '🔴 NO'}\n\n"
+                "Update the bot permissions and send /connect again."
+            )
+
+        # Channels need invite permission; there is no group-style restrict-members requirement.
+        if chat.type == "channel" and not can_invite:
+            return False, (
+                "⚠️ CHANNEL PERMISSIONS INCOMPLETE\n\n"
+                "Invite Users: 🔴 NO\n\n"
+                "Give the Admin Bot permission to invite users/subscribers, then send /connect again."
+            )
+
+        title = getattr(chat, "title", None) or ("Private Channel" if chat.type == "channel" else "Private Group")
+        username = getattr(chat, "username", None)
+
+        # Upsert the destination for this course. Avoid duplicate course/channel rows.
+        existing = (
+            supabase.table("channels")
+            .select("id")
+            .eq("course_id", course_id)
+            .eq("telegram_chat_id", chat.id)
+            .limit(1)
+            .execute()
+        )
+
+        channel_data = {
+            "course_id": course_id,
+            "telegram_chat_id": chat.id,
+            "channel_username": username,
+            "channel_title": title,
+            "is_active": True,
+            "bot_is_admin": True,
+            "can_invite_users": True,
+            "can_manage_members": bool(can_manage),
+        }
+
+        if existing.data:
+            supabase.table("channels").update(channel_data).eq("id", existing.data[0]["id"]).execute()
+        else:
+            supabase.table("channels").insert(channel_data).execute()
+
+        now = datetime.now(timezone.utc).isoformat()
+        supabase.table("telegram_connection_requests").update({
+            "code": code,
+            "status": "verified",
+            "telegram_chat_id": chat.id,
+            "chat_type": chat.type,
+            "channel_title": title,
+            "channel_username": username,
+            "bot_is_admin": True,
+            "can_invite_users": True,
+            "can_manage_members": bool(can_manage),
+            "verified_at": now,
+        }).eq("id", request["id"]).execute()
+
+        course_name = "Course"
+        try:
+            course_row = supabase.table("courses").select("name").eq("id", course_id).limit(1).execute()
+            if course_row.data:
+                course_name = course_row.data[0].get("name") or course_name
+        except Exception:
+            pass
+
+        destination_label = "Channel" if chat.type == "channel" else "Group"
+        text = (
+            f"🟢 {destination_label.upper()} VERIFIED\n\n"
+            f"🎓 Course:\n{course_name}\n\n"
+            f"🔐 Destination:\n{title}\n\n"
+            f"🆔 Chat ID:\n{chat.id}\n\n"
+            "Bot Status:\n🟢 Administrator\n\n"
+            f"Invite Users:\n{'🟢 YES' if can_invite else '🔴 NO'}\n\n"
+            f"Manage Members:\n{'🟢 YES' if can_manage else '➖ N/A'}\n\n"
+            "Course is now connected from the Dashboard."
+        )
+
+        # Return to caller so group messages and channel posts can reply appropriately.
+        return True, text
+    except Exception as error:
+        print(f"[CONNECT] {source} verification error:", repr(error))
+        return False, "❌ Telegram verification failed. Check the Admin Bot permissions and try again."
+
+
+# ============================================================
 # CONNECT PRIVATE GROUP
 # ============================================================
 
@@ -701,6 +837,19 @@ async def connect_group_handler(
         return
 
     code = parts[1].strip().upper()
+
+    # Dashboard-created courses use a persistent connection request.
+    # Try this first, then keep the original Admin Bot course-creation flow as fallback.
+    dashboard_request = await get_dashboard_connection_request(code)
+    if dashboard_request:
+        ok, text = await complete_dashboard_connection(
+            bot=message.bot,
+            chat=message.chat,
+            code=code,
+            source="group",
+        )
+        await message.reply(text)
+        return
 
     pending = pending_group_connections.get(
         message.from_user.id
@@ -839,6 +988,35 @@ async def connect_group_handler(
             "❌ GROUP VERIFICATION FAILED\n\n"
             "Check Admin Bot permissions."
         )
+
+
+# ============================================================
+# CONNECT PRIVATE CHANNEL (channel_post updates)
+# ============================================================
+
+@dp.channel_post(Command("connect"))
+async def connect_channel_handler(message: Message):
+    """Handle /connect in private/public Telegram channels."""
+    raw = (message.text or message.caption or "").strip()
+    print(f"[CONNECT] channel_post received chat_id={message.chat.id} text={raw!r}")
+
+    # Accept /connect CODE and /connect@BotUsername CODE.
+    parts = raw.split(maxsplit=1)
+    if len(parts) != 2:
+        await message.bot.send_message(
+            chat_id=message.chat.id,
+            text="⚠️ Missing connection code.\n\nExample:\n/connect CONNECT-ABCDEFGH",
+        )
+        return
+
+    code = parts[1].strip().split()[0].upper()
+    ok, text = await complete_dashboard_connection(
+        bot=message.bot,
+        chat=message.chat,
+        code=code,
+        source="channel",
+    )
+    await message.bot.send_message(chat_id=message.chat.id, text=text)
 
 
 # ============================================================
@@ -6810,7 +6988,7 @@ async def main():
     print("=" * 50)
     print("🔐 Admin authentication enabled.")
     print("📚 Course management enabled.")
-    print("🔐 Group connection enabled.")
+    print("🔐 Group + Channel connection enabled.")
     print("💳 Plan management enabled.")
     print("📲 QR upload enabled.")
     print("🗄️ Supabase connected.")
