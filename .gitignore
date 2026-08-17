@@ -7,3 +7,9 @@ __pycache__/
 .pytest_cache/
 .vscode/
 .idea/
+admin_bot_current.txt
+app/admin_bot/main_backup.py
+expiry_worker_current.txt
+fix_customer_bot_token.py
+install_settings_safely.py
+render-free.yaml
